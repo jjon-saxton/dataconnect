@@ -31,7 +31,7 @@ class DataBaseSchema extends PDO
   $cols_stmt=rtrim($cols_stmt,', ');
   if ($this->query("CREATE TABLE `".$this->ini['schema']['tableprefix'].$table."` (".$cols_stmt.") ENGINE = MyISAM"))
   {
-   return new DataBaseTable($table,null,$this->ini['name']);
+   return new DataBaseTable($this->ini['schema']['tableprefix'].$table,false,$this->ini['name']);
   }
   else
   {
@@ -134,7 +134,7 @@ class DataBaseTable extends DataBaseSchema
  protected $indices;
  protected $results;
 
- public function __construct($table,$short=true,$file='database.ini')
+ public function __construct($table,$short=true,$file='database.ini',$schema=null)
  {
   $settings=parent::__construct($schema,$file);
   if ($short)
