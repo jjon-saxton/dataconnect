@@ -204,7 +204,7 @@ class DataBaseTable extends DataBaseSchema
   }
  }
 
- public function getData($q=null,array $cols=null,$sort=null,$limit=0,$offset=0, array $keycols=null)
+ public function getData($q=null,array $cols=null,$sort=null,$limit=0,$offset=0, array $matchcols=null)
  {
   $fieldlist=$this->fieldlist;
   if (!empty($cols))
@@ -247,9 +247,15 @@ class DataBaseTable extends DataBaseSchema
   {
    $where_sql=" WHERE";
   }
-  else
+  elseif (is_array($matchcols))
   {
-   $where_sql=" WHERE MATCH (".$keycols." AGAINST ('".$q."')";
+   $match=null;
+   foreach ($matchcols as $fcol)
+   {
+    $match.="`{$fcol}`,";
+   }
+   $match=rtrim($match,",");
+   $where_sql=" WHERE MATCH (".$match.") AGAINST ('".$q."' IN BOOLEAN MODE) AND";
   }
 
   if (@is_array($where))
@@ -269,11 +275,11 @@ class DataBaseTable extends DataBaseSchema
       {
        $where_group.="`".$col."` BETWEEN ".$compare['digit1']." AND ".$compare['digit2'];
       }
-      elseif (preg_match("/^(?P<operator>.*)( )(?P<date>[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (\d{2}\:\d{2})$)/",$item,$compare) > 0) //compare dates
+      elseif (preg_match("/^(?P<operator>[<|>|=])( )(?P<date>[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (\d{2}\:\d{2})$)/",$item,$compare) > 0) //compare dates
       {
        $where_group.="`".$col."` ".$compare['operator']." '".$compare['date']."'";
       }
-      elseif (preg_match("/(?P<operator>.*)( )(?P<digit>\\d+)/",$item,$compare) > 0) //compare digits
+      elseif (preg_match("/(?P<operator>[<|>|=])( )(?P<digit>\\d+)/",$item,$compare) > 0) //compare digits
       {
        $where_group.="`".$col."` ".$compare['operator']." ".$compare['digit'];
       }
@@ -286,12 +292,13 @@ class DataBaseTable extends DataBaseSchema
     }
    }
    $where_sql.=" ".implode($wheres," AND ");
-   $where_sql=preg_replace("/WHERE AND/","WHERE",$where_sql); //Prevents illegal WHERE AND combo
-   if ($where_sql != "WHERE") //add the where string as long as it appears legal
-   {
-    $sql.=" ".$where_sql;
-   }
+  
   }
+  $where_sql=preg_replace("/WHERE AND/","WHERE",$where_sql); //Prevents illegal WHERE AND combo
+  if ($where_sql != "WHERE") //add the where string as long as it appears legal
+  {
+   $sql.=" ".strrtrim($where_sql," AND");
+  } 
   
   if ($sort)
   {
@@ -571,4 +578,19 @@ class DataBaseTable extends DataBaseSchema
 
   return true;
  }
+}
+
+function strrtrim($message,$strip)
+{
+  // break message apart by strip string
+  $lines = explode($strip, $message);
+  $last  = '';
+  // pop off empty strings at the end
+  do
+  {
+    $last = array_pop($lines);
+  }
+  while (empty($last) && (count($lines)));
+  // re-assemble what remains
+  return implode($strip, array_merge($lines, array($last)));
 }
