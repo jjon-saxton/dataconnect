@@ -295,7 +295,7 @@ class DataBaseTable extends DataBaseSchema
   
   }
   $where_sql=preg_replace("/WHERE AND/","WHERE",$where_sql); //Prevents illegal WHERE AND combo
-  if ($where_sql != "WHERE") //add the where string as long as it appears legal
+  if (trim($where_sql) != "WHERE") //add the where string as long as it appears legal
   {
    $sql.=" ".strrtrim($where_sql," AND");
   } 
