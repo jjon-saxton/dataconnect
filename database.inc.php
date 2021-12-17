@@ -39,7 +39,7 @@ class DataBaseSchema extends PDO
   }
  }
 
- public function showTables()
+ public function listTables()
  {
   if ($query=$this->query("SHOW TABLES"))
   {
