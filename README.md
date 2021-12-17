@@ -64,4 +64,4 @@ $data=$query->fetch();
 
 If you have defined columns as FULLTEXT indices (see the documentation of your SQL server for more information) this will search those indices for "some more text" and return on the results **containing** that text.
 
-Full documentation for this script is forthcoming and will included all the options for all methods including limiting columns returned by `DataBaseTable::getData()` as well as sorting and limiting those result. This should, however, be enough to get you started.
+Full documentation for this library is available on our [wiki](https://github.com/jjon-saxton/dataconnect/wiki)!
