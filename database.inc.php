@@ -24,11 +24,17 @@ class DataBaseSchema extends PDO
  {
   if(!$cols)
   {
-   $cols[]="`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY";
-   $cols[]="`name` VARCHAR(50) NOT NULL";
+   $cols['id']="INT NOT NULL AUTO_INCREMENT PRIMARY KEY";
+   $cols['name']="VARCHAR(50) NOT NULL";
   }
-  $cols_stmt=implode(', ',$cols);
+
+  $cols_stmt=null;
+  foreach ($cols as $col=>$attributes)
+  {
+    $cols_stmt.="`{$col}` {$attributes}, ";
+  }
   $cols_stmt=rtrim($cols_stmt,', ');
+
   if ($this->query("CREATE TABLE `".$this->ini['schema']['tableprefix'].$table."` (".$cols_stmt.") ENGINE = MyISAM"))
   {
    return new DataBaseTable($this->ini['schema']['tableprefix'].$table,false,$this->ini['name']);
