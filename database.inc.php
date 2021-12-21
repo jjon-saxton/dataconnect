@@ -184,7 +184,11 @@ class DataBaseTable extends DataBaseSchema
   }
   else
   {
-   $cols_stmt=implode(', ',$cols);
+   $cols_stmt=null;
+   foreach ($cols as $col=>$attributes)
+   {
+     $cols_stmt.="`{$col}` {$attributes}, ";
+   }
    $cols_stmt=rtrim($cols_stmt,', ');
    if ($this->query("ALTER TABLE `".$this->table."` ADD (".$cols_stmt.")"))
    {
