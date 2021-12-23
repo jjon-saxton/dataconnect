@@ -143,7 +143,7 @@ class DataBaseTable extends DataBaseSchema
  public function __construct($table,$short=true,$file='database.ini',$schema=null)
  {
   $settings=parent::__construct($schema,$file);
-  if ($short)
+  if ($short && isset($settings['schema']['tableprefix']))
   {
     $this->table=$settings['schema']['tableprefix'].$table;
   }
